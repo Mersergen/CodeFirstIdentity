@@ -1,0 +1,69 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<CustomUser> SignInManager
+@inject UserManager<CustomUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        var kullanici = await UserManager.GetUserAsync(User);
+        var rol = await UserManager.GetRolesAsync(kullanici);
+
+        <li class="nav-item">
+            <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                @switch (rol.FirstOrDefault())
+                {
+                    case "Admin":
+                        <b class="text-danger">(@rol.FirstOrDefault())</b>
+                        break;
+                    case "Editor":
+                        <b class="text-primary">(@rol.FirstOrDefault())</b>
+                        break;
+                    case "User":
+                        <b class="text-info">(@rol.FirstOrDefault())</b>
+                        break;
+                    default:
+                        <b class="text-warning">(@rol.FirstOrDefault())</b>
+                        break;
+                }
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a id="manage" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+
+                @if (kullanici.Image != null)
+                {
+                    <img src="data:image/*;base64,@(Convert.ToBase64String(kullanici.Image))"
+                         id="profilPicture"
+                         style="width:30px;height:30px;object-fit:fill;border-radius:50%;padding-bottom:5px;" />
+                }
+                else
+                {
+                    <img src=""
+                         id="profilPicture"
+                         style="width:30px;height:30px;object-fit:fill" />
+                }
+
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a id="manage" class="btn btn-outline-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Merhaba @kullanici.FirstName!</a>
+        </li>
+        <li class="nav-item">
+            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button id="logout" type="submit" class="btn btn-outline-danger">Güvenli Çıkış!</button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="btn btn-outline-primary" id="register" asp-area="Identity" asp-page="/Account/Register">Kayıt Ol!</a>
+        </li>
+        <li class="nav-item">
+            <a class="btn btn-outline-success" id="login" asp-area="Identity" asp-page="/Account/Login">Üye Girişi</a>
+        </li>
+    }
+</ul>
